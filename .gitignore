@@ -1,11 +1,1 @@
-# React Native
-/node_modules/
-/android/app/build/
-/ios/Pods/
-/build/
-*.iml
-.gradle
-.DS_Store
-.env
-google-services.json
-firebaseConfig.js
+node_modules
