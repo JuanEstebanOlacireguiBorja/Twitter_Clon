@@ -14,8 +14,15 @@ export const loginWithUsername = async (username, password) => {
     }
 
     // 2. Obtener el email de ese usuario
-    const userData = querySnapshot.docs[0].data();
-    const email = userData.email;
+    const userDoc = querySnapshot.docs[0];
+    if (!userDoc) {
+      throw new Error("User document not found");
+    }
+    const userData = userDoc.data();
+    const email = userData?.email;
+    if (!email) {
+      throw new Error("Email not found for this username");
+    }
 
     // 3. Iniciar sesión en Firebase Auth con email
     const userCredential = await signInWithEmailAndPassword(auth, email, password);

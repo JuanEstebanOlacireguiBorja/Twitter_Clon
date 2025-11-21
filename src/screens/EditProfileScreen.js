@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { auth, db } from "../services/firebase";
 import { doc, getDoc, updateDoc, collection, where, query, getDocs } from "firebase/firestore";
@@ -22,7 +22,7 @@ export default function EditProfileScreen({ navigation }) {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: true,
       quality: 0.7,
     });
@@ -63,9 +63,9 @@ export default function EditProfileScreen({ navigation }) {
 
   const handleSave = async () => {
 
-    let photoURL = userData.photoURL;
+    let photoURL = profileImage;
 
-    if (profileImage && profileImage !== userData.photoURL) {
+    if (profileImage) {
       const uploadedURL = await upLoadProfileImage(uid, profileImage);
       if (uploadedURL) photoURL = uploadedURL;
     }

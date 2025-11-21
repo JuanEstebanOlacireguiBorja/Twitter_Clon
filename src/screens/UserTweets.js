@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
-import { collection, query, where, orderBy, limit, getDocs, startAfter } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { View, Text, FlatList, ActivityIndicator, RefreshControl } from "react-native";
+import { collection, query, where, orderBy, limit, getDocs, startAfter, doc, getDoc } from "firebase/firestore";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { db } from "../services/firebase";
 
@@ -16,12 +17,15 @@ export default function UserTweets({ route }) {
 
   // Load user profile
   const loadUserInfo = async () => {
-    const snap = await getDocs(
-      query(collection(db, "users"), where("__name__", "==", userId))
-    );
+    try {
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
 
-    if (!snap.empty) {
-      setUserInfo(snap.docs[0].data());
+      if (userSnap.exists()) {
+        setUserInfo(userSnap.data());
+      }
+    } catch (error) {
+      console.log("Error loading user info:", error);
     }
   };
 
@@ -90,11 +94,18 @@ export default function UserTweets({ route }) {
   };
 
   useEffect(() => {
-    (async () => {
-      await loadUserInfo();
-      await loadTweets();
-    })();
-  }, []);
+    const initializeData = async () => {
+      try {
+        await loadUserInfo();
+        await loadTweets();
+      } catch (error) {
+        console.log("Error initializing data:", error);
+        setLoading(false);
+      }
+    };
+    
+    initializeData();
+  }, [userId]);
 
   const renderTweet = ({ item }) => (
     <View style={styles.tweetBox}>
@@ -116,41 +127,38 @@ export default function UserTweets({ route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-        <View style={styles.container}>
+      <View style={styles.container}>
         {userInfo && (
-            <Text style={styles.title}>
+          <Text style={styles.title}>
             Tweets by {userInfo.fullName} (@{userInfo.username})
-            </Text>
+          </Text>
         )}
-
-        <FlatList
-            data={tweets}
-            renderItem={renderTweet}
-            keyExtractor={(item) => item.id}
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.3}
-            ListFooterComponent={
-            loadingMore && <ActivityIndicator color="#7f5539" />
-            }
-            refreshControl={
-            <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor="#7f5539"
-            />
-            }
-        />
-        </View>
+      </View>
+      <FlatList
+        data={tweets}
+        renderItem={renderTweet}
+        keyExtractor={(item) => item.id}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.3}
+        ListFooterComponent={
+          loadingMore && <ActivityIndicator color="#7f5539" />
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#7f5539"
+          />
+        }
+      />
     </SafeAreaView>
   );
 }
 
-// Styles
-const styles = StyleSheet.create({
+const styles = {
   container: {
     flex: 1,
-    backgroundColor: "#f2efe8",
-    padding: 15,
+    backgroundColor: "#faf5f0",
   },
   center: {
     flex: 1,
@@ -158,10 +166,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#4d4030",
-    marginBottom: 15,
+    padding: 15,
   },
   tweetBox: {
     backgroundColor: "#ffffff",
@@ -181,4 +189,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#7f5539",
   },
-});
+};

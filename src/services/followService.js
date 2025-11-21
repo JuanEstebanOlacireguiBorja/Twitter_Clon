@@ -1,5 +1,5 @@
 import { db } from "./firebase";
-import { setDoc, deleteDoc, doc, getDoc, updateDoc, increment } from "firebase/firestore";
+import { setDoc, doc, getDoc, updateDoc, increment } from "firebase/firestore";
 
 /**
  * Check if current user follows target user
@@ -24,10 +24,18 @@ export const followUser = async (currentUid, targetUid) => {
     // Increment counters
     await updateDoc(doc(db, "users", currentUid), {
       following: increment(1),
+    }).catch(async (err) => {
+      if (err.code === "not-found") {
+        await setDoc(doc(db, "users", currentUid), { following: 1 }, { merge: true });
+      }
     });
 
     await updateDoc(doc(db, "users", targetUid), {
       followers: increment(1),
+    }).catch(async (err) => {
+      if (err.code === "not-found") {
+        await setDoc(doc(db, "users", targetUid), { followers: 1 }, { merge: true });
+      }
     });
 
     return true;
@@ -42,19 +50,24 @@ export const followUser = async (currentUid, targetUid) => {
  */
 export const unfollowUser = async (currentUid, targetUid) => {
   try {
-    // Remove from following
-    await deleteDoc(doc(db, "users", currentUid, "following", targetUid));
-
-    // Remove from target's followers
-    await deleteDoc(doc(db, "users", targetUid, "followers", currentUid));
-
-    // Decrement counters
+    // Remove from current user's following
+    await setDoc(doc(db, "users", currentUid, "following", targetUid), {}, { merge: true });
     await updateDoc(doc(db, "users", currentUid), {
       following: increment(-1),
+    }).catch(async (err) => {
+      if (err.code === "not-found") {
+        await setDoc(doc(db, "users", currentUid), { following: 0 }, { merge: true });
+      }
     });
 
+    // Remove follower reference in target user
+    await setDoc(doc(db, "users", targetUid, "followers", currentUid), {}, { merge: true });
     await updateDoc(doc(db, "users", targetUid), {
       followers: increment(-1),
+    }).catch(async (err) => {
+      if (err.code === "not-found") {
+        await setDoc(doc(db, "users", targetUid), { followers: 0 }, { merge: true });
+      }
     });
 
     return true;

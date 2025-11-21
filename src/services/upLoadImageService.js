@@ -6,9 +6,7 @@ export const upLoadProfileImage = async (uid, localUri) => {
   try {
     const imageRef = ref(storage, `profileImages/${uid}.jpg`);
 
-    const fileBase64 = await FileSystem.readAsStringAsync(localUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
+    const fileBase64 = await new FileSystem.File(localUri).text();
 
     const blob = Buffer.from(fileBase64, "base64");
 

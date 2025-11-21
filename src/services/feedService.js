@@ -1,5 +1,5 @@
 import { db } from "./firebase";
-import { collection, query, where, orderBy, limit, startAfter, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, orderBy, limit, startAfter, getDocs } from "firebase/firestore";
 
 export const getFollowingIds = async (uid) => {
   const followingRef = collection(db, "users", uid, "following");

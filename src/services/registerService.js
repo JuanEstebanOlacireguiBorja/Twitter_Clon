@@ -36,6 +36,9 @@ export const registerUser = async (fullName, username, email, password) => {
       password
     );
 
+    if (!userCredential.user || !userCredential.user.uid) {
+      throw new Error("USER_CREATION_FAILED");
+    }
     const uid = userCredential.user.uid;
 
     // ---------- CREATE USER PROFILE IN FIRESTORE ----------
@@ -75,8 +78,8 @@ export const registerUser = async (fullName, username, email, password) => {
     if (error.message === "USERNAME_TAKEN")
       message = "Username is already taken";
 
-    if (error.message === "EMAIL_TAKEN")
-      message = "Email already exists in the system";
+    if (error.message === "USER_CREATION_FAILED")
+      message = "Failed to create user account";
 
     return {
       success: false,

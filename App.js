@@ -10,7 +10,9 @@ import TweetScreen from "./src/screens/TweetScreen";
 import FeedScreen from "./src/screens/FeedScreen";
 import UserTweets from "./src/screens/UserTweets";
 import ProfileScreen from "./src/screens/ProfileScreen";
-import EditProfileScreen from "./src/screens/EditProfileScreen"
+import EditProfileScreen from "./src/screens/EditProfileScreen";
+
+// Ensure all imported screens are default exports in their respective files.
 
 const Stack = createNativeStackNavigator();
 

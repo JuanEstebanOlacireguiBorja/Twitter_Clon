@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import { loginWithUsername } from "../services/authService";
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,7 +29,7 @@ export default function LoginScreen({ navigation }) {
         
       {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
 
-      {/*Usermame*/}
+      {/*Username*/}
       <TextInput
         style={styles.input}
         placeholder= "Username"
@@ -49,7 +49,7 @@ export default function LoginScreen({ navigation }) {
 
       {/* Botón de inicio de sesión */}
       <TouchableOpacity style={styles.button} onPress={handlelogin} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> :(
+        {loading ? <ActivityIndicator color="#fff" /> : (
           <Text style={styles.buttonText}>Login</Text>
         )}
       </TouchableOpacity>

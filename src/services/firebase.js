@@ -11,7 +11,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyC3gL1TDbcEjvEDovHYjw9nz25HR8RidDo",
   authDomain: "twitterclon-cccad.firebaseapp.com",
   projectId: "twitterclon-cccad",
-  storageBucket: "twitterclon-cccad.firebasestorage.app",
+  storageBucket: "twitterclon-cccad.appspot.com",
   messagingSenderId: "1018514795970",
   appId: "1:1018514795970:web:69bb841002249bc5b27a5b"
 };

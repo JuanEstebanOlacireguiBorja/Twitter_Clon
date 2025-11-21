@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -22,7 +22,6 @@ import {
 } from "firebase/firestore";
 
 import { db, auth } from "../services/firebase";
-import { useFollow } from "../hooks/useFollow";
 
 export default function FeedScreen({ navigation }) {
   const currentUid = auth.currentUser.uid;
@@ -134,12 +133,6 @@ export default function FeedScreen({ navigation }) {
   };
 
   const renderTweet = ({ item }) => {
-    const isMine = item.uid === currentUid;
-
-    // Hook follow (solo si no es mío)
-    const { following, loading: followLoading, follow, unfollow } =
-      !isMine ? useFollow(item.uid) : { following: false, loading: false };
-
     return (
       <View style={styles.tweetContainer}>
         {/* Foto + nombre */}
@@ -165,21 +158,6 @@ export default function FeedScreen({ navigation }) {
 
         {/* Texto del tweet */}
         <Text style={styles.bodyText}>{item.text}</Text>
-
-        {/* Botón Follow/Unfollow */}
-        {!isMine && !followLoading && (
-          <TouchableOpacity
-            style={[
-              styles.followButton,
-              { backgroundColor: following ? "#b08968" : "#7f5539" },
-            ]}
-            onPress={following ? unfollow : follow}
-          >
-            <Text style={styles.followButtonText}>
-              {following ? "Unfollow" : "Follow"}
-            </Text>
-          </TouchableOpacity>
-        )}
       </View>
     );
   };
